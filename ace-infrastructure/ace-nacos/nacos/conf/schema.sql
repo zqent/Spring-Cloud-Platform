@@ -1,3 +1,19 @@
+/*
+ * Copyright 1999-2018 Alibaba Group Holding Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 CREATE SCHEMA nacos AUTHORIZATION nacos;
 
 CREATE TABLE config_info (
@@ -6,12 +22,12 @@ CREATE TABLE config_info (
   group_id varchar(128) NOT NULL,
   tenant_id varchar(128) default '',
   app_name varchar(128),
-  content LONG VARCHAR NOT NULL,
+  content CLOB,
   md5 varchar(32) DEFAULT NULL,
   gmt_create timestamp NOT NULL DEFAULT '2010-05-05 00:00:00',
   gmt_modified timestamp NOT NULL DEFAULT '2010-05-05 00:00:00',
   src_user varchar(128) DEFAULT NULL,
-  src_ip varchar(20) DEFAULT NULL,
+  src_ip varchar(50) DEFAULT NULL,
   c_desc varchar(256) DEFAULT NULL,
   c_use varchar(64) DEFAULT NULL,
   effect varchar(64) DEFAULT NULL,
@@ -31,12 +47,12 @@ CREATE TABLE his_config_info (
   group_id varchar(128) NOT NULL,
   tenant_id varchar(128) default '',
   app_name varchar(128),
-  content LONG VARCHAR NOT NULL,
+  content CLOB,
   md5 varchar(32) DEFAULT NULL,
   gmt_create timestamp NOT NULL DEFAULT '2010-05-05 00:00:00.000',
   gmt_modified timestamp NOT NULL DEFAULT '2010-05-05 00:00:00.000',
   src_user varchar(128),
-  src_ip varchar(20) DEFAULT NULL,
+  src_ip varchar(50) DEFAULT NULL,
   op_type char(10) DEFAULT NULL,
   constraint hisconfiginfo_nid_key PRIMARY KEY (nid));
 
@@ -51,13 +67,13 @@ CREATE TABLE config_info_beta (
   group_id varchar(128) NOT NULL,
   tenant_id varchar(128) default '',
   app_name varchar(128),
-  content LONG VARCHAR NOT NULL,
+  content CLOB,
   beta_ips varchar(1024),
   md5 varchar(32) DEFAULT NULL,
   gmt_create timestamp NOT NULL DEFAULT '2010-05-05 00:00:00',
   gmt_modified timestamp NOT NULL DEFAULT '2010-05-05 00:00:00',
   src_user varchar(128),
-  src_ip varchar(20) DEFAULT NULL,
+  src_ip varchar(50) DEFAULT NULL,
   constraint configinfobeta_id_key PRIMARY KEY (id),
   constraint uk_configinfobeta_datagrouptenant UNIQUE (data_id,group_id,tenant_id));
 
@@ -68,12 +84,12 @@ CREATE TABLE config_info_tag (
   tenant_id varchar(128) default '',
   tag_id varchar(128) NOT NULL,
   app_name varchar(128),
-  content LONG VARCHAR NOT NULL,
+  content CLOB,
   md5 varchar(32) DEFAULT NULL,
   gmt_create timestamp NOT NULL DEFAULT '2010-05-05 00:00:00',
   gmt_modified timestamp NOT NULL DEFAULT '2010-05-05 00:00:00',
   src_user varchar(128),
-  src_ip varchar(20) DEFAULT NULL,
+  src_ip varchar(50) DEFAULT NULL,
   constraint configinfotag_id_key PRIMARY KEY (id),
   constraint uk_configinfotag_datagrouptenanttag UNIQUE (data_id,group_id,tenant_id,tag_id));
 
@@ -84,7 +100,7 @@ CREATE TABLE config_info_aggr (
   tenant_id varchar(128) default '',
   datum_id varchar(255) NOT NULL,
   app_name varchar(128),
-  content LONG VARCHAR NOT NULL,
+  content CLOB,
   gmt_modified timestamp NOT NULL DEFAULT '2010-05-05 00:00:00',
   constraint configinfoaggr_id_key PRIMARY KEY (id),
   constraint uk_configinfoaggr_datagrouptenantdatum UNIQUE (data_id,group_id,tenant_id,datum_id));
@@ -175,14 +191,38 @@ CREATE INDEX tenant_info_tenant_id_idx ON tenant_info(tenant_id);
 CREATE TABLE users (
 	username varchar(50) NOT NULL PRIMARY KEY,
 	password varchar(500) NOT NULL,
-	enabled boolean NOT NULL
+	enabled boolean NOT NULL DEFAULT true
 );
 
 CREATE TABLE roles (
 	username varchar(50) NOT NULL,
-	role varchar(50) NOT NULL
+	role varchar(50) NOT NULL,
+	constraint uk_username_role UNIQUE (username,role)
+);
+
+CREATE TABLE permissions (
+    role varchar(50) NOT NULL,
+    resource varchar(512) NOT NULL,
+    action varchar(8) NOT NULL,
+    constraint uk_role_permission UNIQUE (role,resource,action)
 );
 
 INSERT INTO users (username, password, enabled) VALUES ('nacos', '$2a$10$EuWPZHzz32dJN7jexM34MOeYirDdFAZm2kuWj7VEOJhhZkDrxfvUu', TRUE);
 
 INSERT INTO roles (username, role) VALUES ('nacos', 'ROLE_ADMIN');
+
+
+/******************************************/
+/*   ipv6 support   */
+/******************************************/
+ALTER TABLE `config_info_tag`
+MODIFY COLUMN `src_ip` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT 'source ip' AFTER `src_user`;
+
+ALTER TABLE `his_config_info`
+MODIFY COLUMN `src_ip` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL AFTER `src_user`;
+
+ALTER TABLE `config_info`
+MODIFY COLUMN `src_ip` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT 'source ip' AFTER `src_user`;
+
+ALTER TABLE `config_info_beta`
+MODIFY COLUMN `src_ip` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT 'source ip' AFTER `src_user`;
