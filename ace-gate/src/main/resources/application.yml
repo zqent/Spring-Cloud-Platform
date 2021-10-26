@@ -35,6 +35,9 @@ spring:
       legacy:
         enabled: true
   cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
     gateway:
       default-filters:
          - DedupeResponseHeader=Access-Control-Allow-Origin
@@ -42,7 +45,7 @@ spring:
          add-to-simple-url-handler-mapping: true
          corsConfigurations:
            '[/**]':
-             allowed-origins: "http://localhost:9572"
+             allowed-origins: "http://localhost:8080"
              allowed-methods: "*"
              allowed-headers: "*"
              allow-credentials: true
@@ -83,9 +86,15 @@ spring:
             - Path=/api/sample/**
           filters:
             - StripPrefix=2
+        - id: ace-customer
+          uri: lb://ace-customer
+          order: 8001
+          predicates:
+            - Path=/api/customer/**
+
     sentinel:
       transport:
-        dashboard: localhost:8080
+        dashboard: localhost:8880
 
 logging:
   level:

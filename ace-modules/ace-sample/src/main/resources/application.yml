@@ -22,12 +22,12 @@ spring:
     name: ace-sample
   datasource:
     name: 管理后端数据库
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/cloud_sample?useUnicode=true&characterEncoding=UTF8
-    username: root
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/cloud_app?useUnicode=true&characterEncoding=UTF8
+    username: cloud_admin
     password: 123456
     # 使用druid数据源
     type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     database: 2
     host: 127.0.0.1
@@ -42,7 +42,7 @@ spring:
   cloud:
     sentinel:
       transport:
-        dashboard: localhost:8080
+        dashboard: localhost:8880
 
 
 

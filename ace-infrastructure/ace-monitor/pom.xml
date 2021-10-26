@@ -13,7 +13,7 @@
     <artifactId>ace-monitor</artifactId>
 
     <properties>
-        <boot.admin.version>2.4.0</boot.admin.version>
+        <boot.admin.version>2.5.2</boot.admin.version>
     </properties>
 
     <dependencies>
@@ -36,12 +36,12 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-            <exclusions>
+<!--            <exclusions>
                 <exclusion>
                     <groupId>org.springframework.cloud</groupId>
                     <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
 
         <dependency>

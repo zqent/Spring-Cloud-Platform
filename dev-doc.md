@@ -24,7 +24,10 @@ Cloud`微`服务`化`开发平台`，具有统一授权、认证后台管理系�
 
 ------
 ## 后端工程启动
-
+- nacos
+    服务端口：8848
+- sentinel
+    服务端口：8880
 ### 项目结构
 ```
 ace-security
@@ -43,16 +46,19 @@ ace-security
 
 ### `环境须知!`
 - mysql一个，redis一个，sentiel一个，nacos注册中心一个
-- jdk1.8
+- jdk1.8,会报base64包依赖错误
 - IDE插件一个，`lombok插件`，具体百度即可
 - 搭建
 
 ### 须知
 因为Cloud-Platform是一个`前后端分离`的项目，所以后端的服务必须先启动，在后端服务启动完成后，再启动前端的工程。
-
+遇到服务启动缺少ace-*模块的问题：
+在右边maven窗口找到相应的ace-*模块，点开Lifecycle,然后再点install.缺哪就点哪个模块的install
 ### 最多人问：代码有漏
 下载完后端代码后，记得先安装`lombok插件`，否则你的IDE会报代码缺失。
-
+### 配置数据库
+   ace-modules/ace-admin/application.yml
+   ace-gate/src/main/resources/application.yml
 ### 运行步骤
 - 先启动redis、redis、mysql以及nacos注册中心
 - 运行数据库脚本：依次运行数据库：ace-modules/ace-admin/db/init.sql
@@ -115,6 +121,11 @@ https://item.taobao.com/item.htm?id=632347815039
 ```
 淘宝地址：https://item.taobao.com/item.htm?id=589442411015
 ```
+### 登录报错或跨域问题
+api/auth/captcha 交易成功
+api/auth/jwt/token 报403 Forbidden .此为跨域问题
+检查ace-gate/application中 
+allowed-origins: "http://localhost:9572"  #此处需改为你vue项目的地址:端口
 
 ## License
 
